@@ -1,0 +1,25 @@
+canvas {
+	position: absolute;
+	width: 700px;
+	height: 460px;
+	border: 1px red solid;
+	margin: auto;
+	background-color: white;
+	top: 10px;
+	left: 10px;
+}
+
+#alien {
+	z-index: -2;
+	background: transparent;
+}
+
+#shooter {
+	z-index: -1;
+	background: transparent;
+}
+
+#background {
+	z-index: -3;
+	/*background: "images/bg.jpg";*/
+}
