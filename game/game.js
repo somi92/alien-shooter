@@ -54,10 +54,10 @@ function GamePlay() {
 		finishImage = document.getElementById('image');
 		
 		alienImage = new Image();
-		alienImage = resourceStorage.ufo;
+		alienImage = resourceStorage.alien1;
 		
 		aliensKilled = 0;
-		health = 7;
+		health = 10;
 		level = 2;
 		
 		mouseIsDown = 0;
@@ -338,7 +338,7 @@ function updateGame() {
 	if(aliensKilled>50) {
 		level = 3;
 		// alienImage.src = "images/alien2.png";
-		alienImage = resourceStorage.alien1;
+		alienImage = resourceStorage.ufo;
 	}
 	
 	if(aliensKilled>100) {
