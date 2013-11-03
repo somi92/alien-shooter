@@ -26,6 +26,8 @@ var mouseIsDown;
 var bubble = [];
 var len;
 
+var bgLoaded = 0;
+
 var cX;
 var cY;
 // var x;
@@ -52,11 +54,11 @@ function GamePlay() {
 		finishImage = document.getElementById('image');
 		
 		alienImage = new Image();
-		alienImage.src = "images/alien1.png";
+		alienImage = resourceStorage.ufo;
 		
 		aliensKilled = 0;
 		health = 7;
-		level = 4;
+		level = 2;
 		
 		mouseIsDown = 0;
 		bubble = [];
@@ -68,10 +70,7 @@ function GamePlay() {
 		
 		updateGame();
 		
-		var bg = new Image();
-		bg.src = "images/bg.png";
-		
-		contextBg.drawImage(bg,0,0,canvasBg.width,canvasBg.height);
+		contextBg.drawImage(resourceStorage.bg,0,0,canvasBg.width,canvasBg.height);
 		
 		shooter = new Shooter();
 		shooter.setCoordinates(10,10);
@@ -82,6 +81,7 @@ function GamePlay() {
                 bubble[i] = 0;
             }
 		// canvasAlien.addEventListener("click", shooter.click, false);
+		
 		animate();
 	};
 	
@@ -98,41 +98,89 @@ function GamePlay() {
 
 var resourceStorage = new function() {
 	
+	var loaded = 0;
+	
+	
+	this.bg = new Image();
 	this.alien1 = new Image();
 	this.alien2 = new Image();
 	this.alien3 = new Image();
 	this.alien4 = new Image();
+	this.alien5 = new Image();
+	this.alien6 = new Image();
 	this.ufo = new Image();
 	
+	this.bg.src = "images/bg.png";
 	this.alien1.src = "images/alien1.png";
 	this.alien2.src = "images/alien2.png";
 	this.alien3.src = "images/alien3.png";
 	this.alien4.src = "images/alien4.png";
+	this.alien5.src = "images/alien5.png";
+	this.alien6.src = "images/alien6.png";
 	this.ufo.src = "images/ufo.png";
 	
-	this.shot = new Audio("sounds/shot.wav");
+	// this.shot = new Audio("sounds/shot.wav");
 	
-	this.getRandomImage = function() {
-		var s = Math.floor((Math.random()*5)+1);
-		switch (s) {
-			case 1:
-				return this.alien1;
-				break;
-			case 2:
-				return this.alien2;
-				break;
-			case 3:
-				return this.alien3;
-				break;
-			case 4:
-				return this.alien4;
-				break;
-			case 5:
-				return this.ufo;
-				break;
+	function loadImage() {
+		loaded++;
+		if(loaded==8) {
+			window.init();
 		}
-		
+	}
+	
+	this.bg.onload = function() {
+		loadImage();
 	};
+	
+	this.alien1.onload = function() {
+		loadImage();
+	};
+	
+	this.alien2.onload = function() {
+		loadImage();
+	};
+	
+	this.alien3.onload = function() {
+		loadImage();
+	};
+	
+	this.alien4.onload = function() {
+		loadImage();
+	};
+	
+	this.alien5.onload = function() {
+		loadImage();
+	};
+	
+	this.alien6.onload = function() {
+		loadImage();
+	};
+	
+	this.ufo.onload = function() {
+		loadImage();
+	};
+	
+	// this.getRandomImage = function() {
+		// var s = Math.floor((Math.random()*5)+1);
+		// switch (s) {
+			// case 1:
+				// return this.alien1;
+				// break;
+			// case 2:
+				// return this.alien2;
+				// break;
+			// case 3:
+				// return this.alien3;
+				// break;
+			// case 4:
+				// return this.alien4;
+				// break;
+			// case 5:
+				// return this.ufo;
+				// break;
+		// }
+// 		
+	// };
 	
 };
 
@@ -243,7 +291,7 @@ function Shooter() {
 				gameOver();
 			}
 			
-			if(aliensKilled>1000) {
+			if(aliensKilled>500) {
 				clearInterval(gameLoop);
 				gameFinished();
 			}
@@ -285,31 +333,38 @@ function updateGame() {
 	score.innerHTML=health;
 	
 	var score = document.getElementById('level');
-	score.innerHTML=level-3;
+	score.innerHTML=level-2;
 	
 	if(aliensKilled>50) {
-		level = 5;
-		alienImage.src = "images/alien2.png";
+		level = 3;
+		// alienImage.src = "images/alien2.png";
+		alienImage = resourceStorage.alien1;
 	}
 	
 	if(aliensKilled>100) {
+		level = 4;
+		// alienImage.src = "images/alien2.png";
+		alienImage = resourceStorage.alien2;
+	}
+	
+	if(aliensKilled>170) {
+		level = 5;
+		alienImage = resourceStorage.alien3;
+	}
+	
+	if(aliensKilled>270) {
 		level = 6;
-		alienImage.src = "images/alien3.png";
+		alienImage = resourceStorage.alien4;
 	}
 	
-	if(aliensKilled>200) {
+	if(aliensKilled>380) {
 		level = 7;
-		alienImage.src = "images/alien4.png";
+		alienImage = resourceStorage.alien5;
 	}
 	
-	if(aliensKilled>400) {
+	if(aliensKilled>450) {
 		level = 8;
-		alienImage.src = "images/alien5.png";
-	}
-	
-	if(aliensKilled>750) {
-		level = 9;
-		alienImage.src = "images/alien6.png";
+		alienImage = resourceStorage.alien6;
 	}
 	// if(health<=0) {
 		// clearInterval(gameLoop);
