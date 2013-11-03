@@ -21,37 +21,39 @@ canvas {
 
 #background {
 	z-index: -3;
-	/*background: "images/bg.jpg";*/
 }
 
 #panel {
 	position: absolute;
 	width: 700px;
-	height: 50px;
+	height: 60px;
 	border: 1px black solid;
 	top: 470px;
 	left: 10px;
 }
 
 #score {
-	/*position:;*/
-	/*width: 20px;*/
+
 }
 
 .labels {
 	width: auto;
 	height: 30px;
-	border: 1px red solid;
+	/*border: 1px red solid;*/
 	float: left;
 	margin-left: 10px;
 	padding: 0px 5px 0px 5px; 
+	font-weight: bold;
+	font-size: 20px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	user-select:none;'
 }
 
 #screen {
-	/*border: 3px red solid;*/
 	width: 400px;
 	height: 350px;
-	/*border: 1px red solid;*/
 	float: left;
 	margin: 60px 0px 10px 150px;
 	background: white;
@@ -62,10 +64,8 @@ canvas {
 	font-size: 20px;
 	color: red;
 	font-weight: bold;
-	/*border: 1px blue solid;*/
 	width: 390px;
 	height: 50px;
-	/*border: 1px red solid;*/
 	float: left;
 	margin: 10px 0px 0px 5px;
 	padding-top: 20px;
@@ -74,10 +74,8 @@ canvas {
 
 
 #image {
-	/*border: 3px blue solid;*/
 	width: 200px;
 	height: 200px;
-	/*border: 1px red solid;*/
 	float: left;
 	margin: 0px 10px 10px 100px;
 	background: white;
@@ -86,7 +84,6 @@ canvas {
 #start {
 	width: 400px;
 	height: 350px;
-	/*border: 1px red solid;*/
 	float: left;
 	margin: 60px 0px 10px 150px;
 	background: white;

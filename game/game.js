@@ -92,7 +92,7 @@ function GamePlay() {
 	
 	this.startTheGame = function() {
 		// shooter.canvasAlien.addEventListener("mousemove", shooter.move(), false);
-		setInterval(function(){game.animate();},30);
+		setInterval(function(){game.animate();},1000/60);
 	};
 }
 
@@ -333,7 +333,7 @@ function updateGame() {
 	score.innerHTML=health;
 	
 	var score = document.getElementById('level');
-	score.innerHTML=level-2;
+	score.innerHTML=level-1;
 	
 	if(aliensKilled>50) {
 		level = 3;
