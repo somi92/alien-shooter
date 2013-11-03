@@ -2,26 +2,30 @@ var game = new GamePlay();
 
 var gameLoop;
 
-var canvasAlien = document.getElementById('alien');
-var contextAlien = canvasAlien.getContext('2d');
+var canvasAlien;
+var contextAlien;
 
-var canvasShooter = document.getElementById('shooter');
-var contextShooter = canvasShooter.getContext('2d');
+var canvasShooter;
+var contextShooter;
 
-var canvasBg = document.getElementById('background');
-var contextBg = canvasBg.getContext('2d');
+var canvasBg;
+var contextBg;
 
-var finishScreen = document.getElementById('screen');
-var message = document.getElementById('message');
-var finishImage = document.getElementById('image');
+var startScreen;
+var finishScreen;
+var message;
+var finishImage;
 
+var alienImage;
 
-var aliensKilled = 0;
-var health = 5;
+var aliensKilled;
+var health;
+var level;
 
-var mouseIsDown = 0;
+var mouseIsDown;
 var bubble = [];
-var len = 0;
+var len;
+
 var cX;
 var cY;
 // var x;
@@ -32,12 +36,37 @@ function GamePlay() {
 	var shooter;
 	
 	this.setUpGame = function() {
-		// this.canvasAlienA = document.getElementById('shooter');
-		// this.contextAlienA = this.canvasAlienA.getcontextAlien('2d');
-// 		
-		// Shooter.prototype.canvasAlien = this.canvasAlienA;
-		// Shooter.prototype.contextAlien = this.contextAlienA;
+		//******************************************
+		canvasAlien = document.getElementById('alien');
+		contextAlien = canvasAlien.getContext('2d');
+		
+		canvasShooter = document.getElementById('shooter');
+		contextShooter = canvasShooter.getContext('2d');
+		
+		canvasBg = document.getElementById('background');
+		contextBg = canvasBg.getContext('2d');
+		
+		startScreen = document.getElementById('start');
+		finishScreen = document.getElementById('screen');
+		message = document.getElementById('message');
+		finishImage = document.getElementById('image');
+		
+		alienImage = new Image();
+		alienImage.src = "images/alien1.png";
+		
+		aliensKilled = 0;
+		health = 7;
+		level = 4;
+		
+		mouseIsDown = 0;
+		bubble = [];
+		len = 0;
+		//******************************************
+		
+		// startScreen.style.visibility="visible";
 		finishScreen.style.visibility="hidden";
+		
+		updateGame();
 		
 		var bg = new Image();
 		bg.src = "images/bg.png";
@@ -136,7 +165,7 @@ function Shooter() {
 		x = e.pageX - canvasShooter.offsetLeft;
 		y = e.pageY - canvasShooter.offsetTop;
   		
-  		contextShooter.clearRect(x-300,y-300,500,500);
+  		contextShooter.clearRect(x-400,y-400,600,600);
 		
 		var scopeImg = new Image();
 		scopeImg.src = "images/scope.png";
@@ -170,14 +199,17 @@ function Shooter() {
         
         function animate() {
         	// var speed = Math.floor((Math.random()*5)+1);
+        	// startScreen.style.vi	sibility = "hidden";
             contextAlien.strokeStyle = "transparent";
             contextAlien.clearRect(0,0, canvasAlien.width, canvasAlien.height);
             // create a path for each bubble
             for (i = 0; i < 7; i++) {
-            	var speed = Math.floor((Math.random()*8)+1);
+            	var speed = Math.floor((Math.random()*level)+1);
                 bubble[i]+= speed;
                 if (bubble[i] >= canvasAlien.height - 50) {
                 	health--;
+                	var al = new Audio("sounds/aliens.wav");
+                	al.play();
                 	var pos = Math.floor((Math.random()*100)+1);
                     bubble[i] = -pos;
                     updateGame();
@@ -191,7 +223,7 @@ function Shooter() {
                // ctx.fillRect(x,y,50,50);
                 // var alien = new Image();
                 // alien.src = "images/alien3.png";
-                contextAlien.drawImage(resourceStorage.alien1,x,y,70,70);
+                contextAlien.drawImage(alienImage,x,y,70,70);
                 contextAlien.closePath();
                 // test each extant touch to see if it is on the bubble
                 var pos1 = Math.floor(10+(1+120-10)*Math.random());
@@ -209,6 +241,11 @@ function Shooter() {
             if(health<=0) {
 				clearInterval(gameLoop);
 				gameOver();
+			}
+			
+			if(aliensKilled>1000) {
+				clearInterval(gameLoop);
+				gameFinished();
 			}
         }
 // var game = GamePlay();
@@ -231,6 +268,14 @@ function gameOver() {
 	laugh.play();
 }
 
+function gameFinished() {
+	finishScreen.style.visibility="visible";
+	message.innerHTML="You saved the world, our hero! ";
+	finishImage.setAttribute("src","images/celebration.png");
+	var hero = new Audio("sounds/hero.ogg");
+	hero.play();
+}
+
 function updateGame() {
 	
 	var score = document.getElementById('score');
@@ -239,9 +284,41 @@ function updateGame() {
 	var score = document.getElementById('health');
 	score.innerHTML=health;
 	
+	var score = document.getElementById('level');
+	score.innerHTML=level-3;
+	
+	if(aliensKilled>50) {
+		level = 5;
+		alienImage.src = "images/alien2.png";
+	}
+	
+	if(aliensKilled>100) {
+		level = 6;
+		alienImage.src = "images/alien3.png";
+	}
+	
+	if(aliensKilled>200) {
+		level = 7;
+		alienImage.src = "images/alien4.png";
+	}
+	
+	if(aliensKilled>400) {
+		level = 8;
+		alienImage.src = "images/alien5.png";
+	}
+	
+	if(aliensKilled>750) {
+		level = 9;
+		alienImage.src = "images/alien6.png";
+	}
 	// if(health<=0) {
 		// clearInterval(gameLoop);
 	// }
+}
+
+function startTheGame() {
+	// startScreen.remove();
+	setInterval(function(){game.animate();},30);
 }
 
 function init() {

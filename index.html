@@ -28,16 +28,25 @@
         <canvas id="shooter" width="700" height="460">
         	Your browser does not support canvas.
         </canvas>
+        
+        <!-- <div id="start">
+        	<p id="message"></p>
+        	<img id="image" />
+        	<input id="again" type="button" value="Play the game!" onclick="startTheGame()" />
+        </div>
+         -->
         <div id="screen">
         	<p id="message"></p>
         	<img id="image" />
-        	<input id="again" type="button" value="Play again!" />
+        	<input id="again" type="button" value="Play again!" onclick="init()" />
         </div>
         <div id="panel">
         	<p class="labels">ALIENS KILLED: </p>
         	<p id="score" class="labels"></p>
         	<p class="labels">HEALTH: </p>
         	<p id="health" class="labels"></p>
+        	<p class="labels">LEVEL: </p>
+        	<p id="level" class="labels"></p>
         </div>
         <script src="game/game.js"></script>
         <!-- <script src="game/game.js"></script> -->
