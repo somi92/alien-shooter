@@ -1,40 +1,54 @@
 var game = new GamePlay();
 
-var gameLoop;
-
+// variables to hold canvas on which aliens are drawn
 var canvasAlien;
 var contextAlien;
 
+// variables for holding shooter canvas
 var canvasShooter;
 var contextShooter;
 
+// background canvas
 var canvasBg;
 var contextBg;
 
-var startScreen;
+// screen displayed when the game is over
 var finishScreen;
+// message shown in the end
 var message;
+// image shown in the end
 var finishImage;
-
+// variables that hold current alien image
 var alienImage;
 
+// keeping track of aliens killed
 var aliensKilled;
+// keeping track of players health
 var health;
+// keeping track of game level
 var level;
 
+// determine if the mouse click is up or down, 0=up, 1=down
 var mouseIsDown;
-var bubble = [];
+// array that holds aliens vertical position on the screen
+var alien = [];
+// this variable is used to hold the length of touches when using
+// touchscreen devices (multiple touches at the same time), however, 
+// this version of the game wont support touch screen devices so this
+// variable will always be =1 because it is only possible to have one
+// click at the same time, support for touchscreen devices will be
+// implemented in next version
 var len;
 
-var bgLoaded = 0;
-
+// variables to hold horizontal and vertical position on canvas
 var cX;
 var cY;
-// var x;
-// var y;
 
+// class to hold and manage resources and
 function GamePlay() {
 	
+	// variable to hold game timer which loops the animation
+	var gameLoop;
 	var shooter;
 	
 	this.setUpGame = function() {
@@ -54,23 +68,23 @@ function GamePlay() {
 		finishImage = document.getElementById('image');
 		
 		alienImage = new Image();
-		alienImage = resourceStorage.alien1;
+		alienImage = imageStorage.alien1;
 		
 		aliensKilled = 0;
 		health = 10;
 		level = 2;
 		
 		mouseIsDown = 0;
-		bubble = [];
+		alien = [];
 		len = 0;
 		//******************************************
 		
 		// startScreen.style.visibility="visible";
 		finishScreen.style.visibility="hidden";
 		
-		updateGame();
+		this.updateGame();
 		
-		contextBg.drawImage(resourceStorage.bg,0,0,canvasBg.width,canvasBg.height);
+		contextBg.drawImage(imageStorage.bg,0,0,canvasBg.width,canvasBg.height);
 		
 		shooter = new Shooter();
 		shooter.setCoordinates(10,10);
@@ -78,25 +92,134 @@ function GamePlay() {
 		canvasShooter.addEventListener("mousedown",shooter.mouseDown, false);
 		canvasShooter.addEventListener("mouseup",shooter.mouseUp, false);
 		for (i = 0; i < 7; i++) {
-                bubble[i] = 0;
+                alien[i] = 0;
             }
 		// canvasAlien.addEventListener("click", shooter.click, false);
 		
-		animate();
+		// animate();
+		// this.animate();
 	};
 	
 	
 	this.animate = function() {
-
+		// var speed = Math.floor((Math.random()*5)+1);
+		// startScreen.style.vi	sibility = "hidden";
+        contextAlien.strokeStyle = "transparent";
+        contextAlien.clearRect(0,0, canvasAlien.width, canvasAlien.height);
+        // create a path for each bubble
+        for (i = 0; i < 7; i++) {
+          	var speed = Math.floor((Math.random()*level)+1);
+            alien[i]+= speed;
+            if (alien[i] >= canvasAlien.height - 50) {
+              	health--;
+               	var al = new Audio("sounds/aliens.wav");
+               	al.play();
+               	var pos = Math.floor((Math.random()*100)+1);
+                alien[i] = -pos;
+                this.updateGame();
+                    // var image = imageStorage.getRandomImage();
+               }
+            var y = alien[i];
+            var x = (i+0.5) * 90;
+            var radius = 33;
+            contextAlien.beginPath();
+            contextAlien.arc(x+35, y+35, radius, 0, 2 * Math.PI);
+               // ctx.fillRect(x,y,50,50);
+                // var alien = new Image();
+                // alien.src = "images/alien3.png";
+            contextAlien.drawImage(alienImage,x,y,70,70);
+            contextAlien.closePath();
+                // test each extant touch to see if it is on the bubble
+            var pos1 = Math.floor(10+(1+120-10)*Math.random());
+            for (j = 0;j < len; j++) {
+   		         if (contextAlien.isPointInPath(cX, cY) && mouseIsDown) {
+                   	alien[i] = -pos1;
+                   	aliensKilled++;
+                   	this.updateGame();	
+                 }
+             }
+             contextAlien.stroke();
+        }
+            // gameLoop = setTimeout(this.animate, 30);
+            
+        if(health<=0) {
+			clearInterval(gameLoop);
+			this.gameOver();
+		}
+			
+		if(aliensKilled>500) {
+			clearInterval(gameLoop);
+			this.gameFinished();
+		}
 	};
 	
 	this.startTheGame = function() {
 		// shooter.canvasAlien.addEventListener("mousemove", shooter.move(), false);
-		setInterval(function(){game.animate();},1000/60);
+		gameLoop = setInterval(function(){game.animate();},30);
+	};
+	
+	
+	this.updateGame = function() {
+		var score = document.getElementById('score');
+		score.innerHTML=aliensKilled;
+		
+		var score = document.getElementById('health');
+		score.innerHTML=health;
+		
+		var score = document.getElementById('level');
+		score.innerHTML=level-1;
+		
+		if(aliensKilled>50) {
+			level = 3;
+			// alienImage.src = "images/alien2.png";
+			alienImage = imageStorage.ufo;
+		}
+		
+		if(aliensKilled>100) {
+			level = 4;
+			// alienImage.src = "images/alien2.png";
+			alienImage = imageStorage.alien2;
+		}
+		
+		if(aliensKilled>170) {
+			level = 5;
+			alienImage = imageStorage.alien3;
+		}
+		
+		if(aliensKilled>270) {
+			level = 6;
+			alienImage = imageStorage.alien4;
+		}
+		
+		if(aliensKilled>380) {
+			level = 7;
+			alienImage = imageStorage.alien5;
+		}
+		
+		if(aliensKilled>450) {
+			level = 8;
+			alienImage = imageStorage.alien6;
+		}
+	};
+	
+	this.gameOver = function() {
+		finishScreen.style.visibility="visible";
+		message.innerHTML="You failed! Humanity is finished!";
+		finishImage.setAttribute("src","images/evilalien.png");
+		var laugh = new Audio("sounds/evillaugh.wav");
+		laugh.play();
+	};
+	
+	this.gameFinished = function() {
+		finishScreen.style.visibility="visible";
+		message.innerHTML="You saved the world, our hero! ";
+		finishImage.setAttribute("src","images/celebration.png");
+		var hero = new Audio("sounds/hero.ogg");
+		hero.play();
 	};
 }
 
-var resourceStorage = new function() {
+var imageStorage = new function() {
 	
 	var loaded = 0;
 	
@@ -245,57 +368,57 @@ function Shooter() {
 }
 
         
-        function animate() {
-        	// var speed = Math.floor((Math.random()*5)+1);
-        	// startScreen.style.vi	sibility = "hidden";
-            contextAlien.strokeStyle = "transparent";
-            contextAlien.clearRect(0,0, canvasAlien.width, canvasAlien.height);
-            // create a path for each bubble
-            for (i = 0; i < 7; i++) {
-            	var speed = Math.floor((Math.random()*level)+1);
-                bubble[i]+= speed;
-                if (bubble[i] >= canvasAlien.height - 50) {
-                	health--;
-                	var al = new Audio("sounds/aliens.wav");
-                	al.play();
-                	var pos = Math.floor((Math.random()*100)+1);
-                    bubble[i] = -pos;
-                    updateGame();
-                    // var image = resourceStorage.getRandomImage();
-                }
-                var y = bubble[i];
-                var x = (i+0.5) * 90;
-                var radius = 33;
-                contextAlien.beginPath();
-                contextAlien.arc(x+35, y+35, radius, 0, 2 * Math.PI);
-               // ctx.fillRect(x,y,50,50);
-                // var alien = new Image();
-                // alien.src = "images/alien3.png";
-                contextAlien.drawImage(alienImage,x,y,70,70);
-                contextAlien.closePath();
-                // test each extant touch to see if it is on the bubble
-                var pos1 = Math.floor(10+(1+120-10)*Math.random());
-                for (j = 0;j < len; j++) {
-                    if (contextAlien.isPointInPath(cX, cY) && mouseIsDown) {
-                    	bubble[i] = -pos1;
-                    	aliensKilled++;
-                    	updateGame();	
-                    }
-                }
-                contextAlien.stroke();
-            }
-            gameLoop = setTimeout(animate, 30);
-            
-            if(health<=0) {
-				clearInterval(gameLoop);
-				gameOver();
-			}
-			
-			if(aliensKilled>500) {
-				clearInterval(gameLoop);
-				gameFinished();
-			}
-        }
+        // function animate() {
+        	// // var speed = Math.floor((Math.random()*5)+1);
+        	// // startScreen.style.vi	sibility = "hidden";
+            // contextAlien.strokeStyle = "transparent";
+            // contextAlien.clearRect(0,0, canvasAlien.width, canvasAlien.height);
+            // // create a path for each bubble
+            // for (i = 0; i < 7; i++) {
+            	// var speed = Math.floor((Math.random()*level)+1);
+                // alien[i]+= speed;
+                // if (alien[i] >= canvasAlien.height - 50) {
+                	// health--;
+                	// var al = new Audio("sounds/aliens.wav");
+                	// al.play();
+                	// var pos = Math.floor((Math.random()*100)+1);
+                    // alien[i] = -pos;
+                    // updateGame();
+                    // // var image = imageStorage.getRandomImage();
+                // }
+                // var y = alien[i];
+                // var x = (i+0.5) * 90;
+                // var radius = 33;
+                // contextAlien.beginPath();
+                // contextAlien.arc(x+35, y+35, radius, 0, 2 * Math.PI);
+               // // ctx.fillRect(x,y,50,50);
+                // // var alien = new Image();
+                // // alien.src = "images/alien3.png";
+                // contextAlien.drawImage(alienImage,x,y,70,70);
+                // contextAlien.closePath();
+                // // test each extant touch to see if it is on the bubble
+                // var pos1 = Math.floor(10+(1+120-10)*Math.random());
+                // for (j = 0;j < len; j++) {
+                    // if (contextAlien.isPointInPath(cX, cY) && mouseIsDown) {
+                    	// alien[i] = -pos1;
+                    	// aliensKilled++;
+                    	// updateGame();	
+                    // }
+                // }
+                // contextAlien.stroke();
+            // }
+            // gameLoop = setTimeout(animate, 30);
+//             
+            // if(health<=0) {
+				// clearInterval(gameLoop);
+				// gameOver();
+			// }
+// 			
+			// if(aliensKilled>500) {
+				// clearInterval(gameLoop);
+				// gameFinished();
+			// }
+        // }
 // var game = GamePlay();
 
 // function mousePosition(event) {
@@ -309,72 +432,72 @@ function Shooter() {
 //   	
 // };
 function gameOver() {
-	finishScreen.style.visibility="visible";
-	message.innerHTML="You failed! Humanity is finished!";
-	finishImage.setAttribute("src","images/evilalien.png");
-	var laugh = new Audio("sounds/evillaugh.wav");
-	laugh.play();
+	// finishScreen.style.visibility="visible";
+	// message.innerHTML="You failed! Humanity is finished!";
+	// finishImage.setAttribute("src","images/evilalien.png");
+	// var laugh = new Audio("sounds/evillaugh.wav");
+	// laugh.play();
 }
 
 function gameFinished() {
-	finishScreen.style.visibility="visible";
-	message.innerHTML="You saved the world, our hero! ";
-	finishImage.setAttribute("src","images/celebration.png");
-	var hero = new Audio("sounds/hero.ogg");
-	hero.play();
+	// finishScreen.style.visibility="visible";
+	// message.innerHTML="You saved the world, our hero! ";
+	// finishImage.setAttribute("src","images/celebration.png");
+	// var hero = new Audio("sounds/hero.ogg");
+	// hero.play();
 }
 
 function updateGame() {
 	
-	var score = document.getElementById('score');
-	score.innerHTML=aliensKilled;
-	
-	var score = document.getElementById('health');
-	score.innerHTML=health;
-	
-	var score = document.getElementById('level');
-	score.innerHTML=level-1;
-	
-	if(aliensKilled>50) {
-		level = 3;
-		// alienImage.src = "images/alien2.png";
-		alienImage = resourceStorage.ufo;
-	}
-	
-	if(aliensKilled>100) {
-		level = 4;
-		// alienImage.src = "images/alien2.png";
-		alienImage = resourceStorage.alien2;
-	}
-	
-	if(aliensKilled>170) {
-		level = 5;
-		alienImage = resourceStorage.alien3;
-	}
-	
-	if(aliensKilled>270) {
-		level = 6;
-		alienImage = resourceStorage.alien4;
-	}
-	
-	if(aliensKilled>380) {
-		level = 7;
-		alienImage = resourceStorage.alien5;
-	}
-	
-	if(aliensKilled>450) {
-		level = 8;
-		alienImage = resourceStorage.alien6;
-	}
+	// var score = document.getElementById('score');
+	// score.innerHTML=aliensKilled;
+// 	
+	// var score = document.getElementById('health');
+	// score.innerHTML=health;
+// 	
+	// var score = document.getElementById('level');
+	// score.innerHTML=level-1;
+// 	
+	// if(aliensKilled>50) {
+		// level = 3;
+		// // alienImage.src = "images/alien2.png";
+		// alienImage = imageStorage.ufo;
+	// }
+// 	
+	// if(aliensKilled>100) {
+		// level = 4;
+		// // alienImage.src = "images/alien2.png";
+		// alienImage = imageStorage.alien2;
+	// }
+// 	
+	// if(aliensKilled>170) {
+		// level = 5;
+		// alienImage = imageStorage.alien3;
+	// }
+// 	
+	// if(aliensKilled>270) {
+		// level = 6;
+		// alienImage = imageStorage.alien4;
+	// }
+// 	
+	// if(aliensKilled>380) {
+		// level = 7;
+		// alienImage = imageStorage.alien5;
+	// }
+// 	
+	// if(aliensKilled>450) {
+		// level = 8;
+		// alienImage = imageStorage.alien6;
+	// }
 	// if(health<=0) {
 		// clearInterval(gameLoop);
 	// }
 }
 
-function startTheGame() {
-	// startScreen.remove();
-	setInterval(function(){game.animate();},30);
-}
+// function startTheGame() {
+	// // startScreen.remove();
+	// setInterval(function(){game.animate();},30);
+// }
 
 function init() {
 	
