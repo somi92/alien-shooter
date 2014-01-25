@@ -40,6 +40,10 @@ function GamePlay() {
 	this.canvasShooter;
 	this.contextShooter;
 	
+	// variables for holding bonus canvas
+	this.canvasBonus;
+	this.contextBonus;
+	
 	// background canvas
 	var canvasBg;
 	var contextBg;
@@ -64,6 +68,10 @@ function GamePlay() {
 	this.mouseIsDown;
 	// array that holds aliens vertical position on the screen
 	var alien = [];
+	
+	var boxX;
+	var boxY;
+	
 	// this variable is used to hold the length of touches when using
 	// touchscreen devices (multiple touches at the same time), however, 
 	// this version of the game wont support touch screen devices so this
@@ -72,9 +80,15 @@ function GamePlay() {
 	// implemented in next version
 	this.len;
 	
-	// variables to hold horizontal and vertical position on canvas
+	// variables to hold horizontal and vertical position of shooter on canvas
 	this.cX;
 	this.cY;
+	
+	this.slots = [];
+	
+	var missiles;
+	
+	this.bonusFalling;
 	
 	// this function sets up the game environment
 	this.setUpGame = function() {
@@ -85,6 +99,9 @@ function GamePlay() {
 		this.canvasShooter = document.getElementById('shooter');
 		this.contextShooter = this.canvasShooter.getContext('2d');
 		
+		this.canvasBonus = document.getElementById('bonus');
+		this.contextBonus = this.canvasBonus.getContext('2d');
+		
 		canvasBg = document.getElementById('background');
 		contextBg = canvasBg.getContext('2d');
 		
@@ -93,12 +110,26 @@ function GamePlay() {
 		message = document.getElementById('message');
 		finishImage = document.getElementById('image');
 		
+		// this.slot1 = document.getElementById('slot1');
+		// this.slot2 = document.getElementById('slot2');
+		// this.slot3 = document.getElementById('slot3');
+		
+		this.slots[0] = document.getElementById('slot1');
+		this.slots[1] = document.getElementById('slot2');
+		this.slots[2] = document.getElementById('slot3');
+		
+		missiles = 0;
+		
 		alienImage = new Image();
 		alienImage = imageStorage.alien1;
 		
 		aliensKilled = 0;
 		health = 10;
 		level = 2;
+		
+		boxX = -20;
+		boxY = -20;
+		bonusFalling = false;
 		
 		this.mouseIsDown = 0;
 		alien = [];
@@ -126,20 +157,28 @@ function GamePlay() {
 	
 	// this function is repeatedly executed and it draws all dynamic elements in game
 	this.animate = function() {
+		
         this.contextAlien.strokeStyle = "transparent";
         this.contextAlien.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
+        
+        this.contextBonus.strokeStyle = "transparent";
+        this.contextBonus.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
+        
         // in this loop a path is created for each alien
         for (i = 0; i < 7; i++) {
+          	
           	var speed = Math.floor((Math.random()*level)+1);
             alien[i]+= speed;
+            
             if (alien[i] >= this.canvasAlien.height - 50) {
-              	health--;
+              	// health--;
                	var al = new Audio("sounds/aliens.ogg");
-               	al.play();
+               	// al.play();
                	var pos = Math.floor((Math.random()*100)+1);
                 alien[i] = -pos;
                 this.updateGame();
             }
+            
             var y = alien[i];
             var x = (i+0.5) * 90;
             var radius = 33;
@@ -148,25 +187,92 @@ function GamePlay() {
             this.contextAlien.drawImage(alienImage,x,y,70,70);
             this.contextAlien.closePath();
             var pos1 = Math.floor(10+(1+120-10)*Math.random());
+        
             // this loop checks if click has occured on any alien and sends it back to the top, see len
             for (j = 0;j < this.len; j++) {
    		         if (this.contextAlien.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
                    	alien[i] = -pos1;
-                   	aliensKilled++;
+                   	// aliensKilled++;
                    	this.updateGame();	
                  }
              }
+             
              this.contextAlien.stroke();
         }
+        
+        if(bonusFalling==false) {
+        	
+        	var mysteryP = Math.floor((Math.random()*1000)+1);
+        	if(mysteryP>=998 && mysteryP<=1000 && level>1) {
+        		
+        		bonusFalling = true;
+        		boxX = (Math.random()*650)+50;
+        		boxY = -20;
+        		this.contextBonus.beginPath();
+        		this.contextBonus.arc(boxX+35, boxY+35, 33, 0, 2 * Math.PI);
+        		this.contextBonus.drawImage(imageStorage.mystery_box,boxX,boxY,70,70);
+        		this.contextBonus.closePath();
+        	}	
+        	
+        } else {
+        	
+        	if (boxY >= this.canvasAlien.height - 50) {
+               	
+               	bonusFalling = false;
+               	
+            } else {
+            	
+            	boxY += 5;
+	        	this.contextBonus.beginPath();
+	        	this.contextBonus.arc(boxX+35, boxY+35, 33, 0, 2 * Math.PI);
+	        	this.contextBonus.drawImage(imageStorage.mystery_box,boxX,boxY,70,70);
+	        	this.contextBonus.closePath();
+	        	if(boxY>50 && boxY<70) {
+	        		var box_sound = new Audio("sounds/box_falling.ogg");
+	        		box_sound.play();	
+	        	}
+	        	
+	        	if (this.contextBonus.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
+                   	bonusFalling = false;
+                   	aliensKilled++;
+                   	this.updateGame();
+                   	this.openTheBox();
+                 }
+            }
+        	
+        }
+        
         // check for game over  
         if(health<=0) {
 			clearInterval(gameLoop);
 			this.gameOver();
 		}
+		
 		// check for game finished
 		if(aliensKilled>500) {
 			clearInterval(gameLoop);
 			this.gameFinished();
+		}
+	};
+	
+	this.openTheBox = function() {
+		var p = (Math.random()*100)+1;
+		if(missiles<3) {
+			if(p>=0 && p<80) {
+				this.slots[0+missiles].setAttribute("src","images/missile.png");
+				missiles++;
+			}
+			// if(p>=40 && p<80) {
+// 				
+			// }
+			if(p>=80 && p<=100) {
+				var al = new Audio("sounds/aliens.ogg");
+               	al.play();
+				health--;
+				this.updateGame();
+			}
+		} else {
+			
 		}
 	};
 	
@@ -253,6 +359,7 @@ var imageStorage = new function() {
 	this.ufo = new Image();
 	this.evilalien = new Image();
 	this.celebration = new Image();
+	this.mystery_box = new Image();
 	
 	this.bg.src = "images/bg.png";
 	this.scope.src = "images/scope.png";
@@ -265,12 +372,13 @@ var imageStorage = new function() {
 	this.ufo.src = "images/ufo.png";
 	this.evilalien.src = "images/evilalien.png";
 	this.celebration.src = "images/celebration.png";
+	this.mystery_box.src = "images/mystery_box.png";
 	
 	// this.shot = new Audio("sounds/shot.wav");
 	
 	function loadImage() {
 		loaded++;
-		if(loaded==11) {
+		if(loaded==12) {
 			window.init();
 		}
 	}
@@ -319,6 +427,9 @@ var imageStorage = new function() {
 		loadImage();
 	};
 	
+	this.mystery_box.onload = function() {
+		loadImage();
+	};
 };
 
 // class that manages the shooter (players scope)
