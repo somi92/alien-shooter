@@ -87,10 +87,12 @@ function GamePlay() {
 	this.slots = [];
 	var missiles;
 	
+	this.bonusEnabled;
+	this.bonusFalling;
+	this.bonusInLevel;
+	
 	this.timeMachineSwitch;
 	var timeMachineCounter;
-	
-	this.bonusFalling;
 	
 	// this function sets up the game environment
 	this.setUpGame = function() {
@@ -121,8 +123,10 @@ function GamePlay() {
 		this.slots[2] = document.getElementById('slot3');
 		missiles = 0;
 		
-		timeMachineSwitch = false;
+		this.bonusEnabled = true;
+		this.timeMachineSwitch = false;
 		timeMachineCounter = 0;
+		this.bonusInLevel = 0;
 		
 		alienImage = new Image();
 		alienImage = imageStorage.alien1;
@@ -133,7 +137,7 @@ function GamePlay() {
 		
 		boxX = -20;
 		boxY = -20;
-		bonusFalling = false;
+		this.bonusFalling = false;
 		
 		this.mouseIsDown = 0;
 		alien = [];
@@ -170,9 +174,9 @@ function GamePlay() {
         this.contextBonus.strokeStyle = "transparent";
         this.contextBonus.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
         
-        if(this.timeMachineSwitch==true && timeMachineCounter<=80) {
+        if(this.timeMachineSwitch==true && timeMachineCounter<=70) {
           		// alien[i] += (speed-50);
-          		timeReverse = 2;
+          		timeReverse = 3;
           		timeMachineCounter++;
           		// console.log("Inside true");
           	} else {
@@ -201,14 +205,14 @@ function GamePlay() {
             if (alien[i] >= this.canvasAlien.height - 50) {
               	// health--;
                	var al = new Audio("sounds/aliens.ogg");
-               	// al.play();
+               	al.play();
                	var pos = Math.floor((Math.random()*100)+1);
                 alien[i] = -pos;
                 this.updateGame();
             }
             
             var y = alien[i];
-            var x = (i+0.5) * 90;
+			var x = (i+0.5) * 90;
             var radius = 33;
             this.contextAlien.beginPath();
             this.contextAlien.arc(x+35, y+35, radius, 0, 2 * Math.PI);
@@ -220,7 +224,7 @@ function GamePlay() {
             for (j = 0;j < this.len; j++) {
    		         if (this.contextAlien.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
                    	alien[i] = -pos1;
-                   	// aliensKilled++;
+                   	aliensKilled++;
                    	this.updateGame();	
                  }
              }
@@ -228,12 +232,13 @@ function GamePlay() {
              this.contextAlien.stroke();
         }
         
-        if(bonusFalling==false) {
+        if(this.bonusFalling==false && this.bonusEnabled==true && this.bonusInLevel<3 ) {
         	
         	var mysteryP = Math.floor((Math.random()*1000)+1);
         	if(mysteryP>=998 && mysteryP<=1000 && level>1) {
         		
         		bonusFalling = true;
+        		this.bonusInLevel++;
         		boxX = (Math.random()*650)+50;
         		boxY = -20;
         		this.contextBonus.beginPath();
@@ -262,8 +267,8 @@ function GamePlay() {
 	        	
 	        	if (this.contextBonus.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
                    	bonusFalling = false;
-                   	aliensKilled++;
-                   	this.updateGame();
+                   	// aliensKilled++;
+                   	// this.updateGame();
                    	this.openTheBox();
                  }
             }
@@ -284,25 +289,31 @@ function GamePlay() {
 	};
 	
 	this.openTheBox = function() {
+		
 		var p = (Math.random()*100)+1;
 		if(missiles<3) {
-			if(p>=0 && p<40) {
+			if(p>=0 && p<50) {
 				this.slots[0+missiles].setAttribute("src","images/missile.png");
 				missiles++;
+				// if(missiles==3) {
+					// this.bonusEnabled=false;
+				// }
 			}
-			if(p>=40 && p<80) {
+			if(p>=50 && p<=100) {
 				this.timeMachineSwitch=true;
 				var al = new Audio("sounds/slow_down.ogg");
                	al.play();	
 			}
-			if(p>=80 && p<=100) {
-				var al = new Audio("sounds/aliens.ogg");
-               	al.play();
-				health--;
-				this.updateGame();
-			}
+			// if(p>=50 && p<=100) {
+				// var al = new Audio("sounds/aliens.ogg");
+               	// al.play();
+				// health--;
+				// this.updateGame();
+			// }
 		} else {
-			
+				this.timeMachineSwitch=true;
+				var al = new Audio("sounds/slow_down.ogg");
+               	al.play();
 		}
 	};
 	
@@ -325,31 +336,37 @@ function GamePlay() {
 		if(aliensKilled>50) {
 			level = 3;
 			alienImage = imageStorage.ufo;
+			this.bonusInLevel = 0;
 		}
 		
 		if(aliensKilled>100) {
 			level = 4;
 			alienImage = imageStorage.alien2;
+			this.bonusInLevel = 0;
 		}
 		
 		if(aliensKilled>170) {
 			level = 5;
 			alienImage = imageStorage.alien3;
+			this.bonusInLevel = 0;
 		}
 		
 		if(aliensKilled>270) {
 			level = 6;
 			alienImage = imageStorage.alien4;
+			this.bonusInLevel = 0;
 		}
 		
 		if(aliensKilled>380) {
 			level = 7;
 			alienImage = imageStorage.alien5;
+			this.bonusInLevel = 0;
 		}
 		
 		if(aliensKilled>450) {
 			level = 8;
 			alienImage = imageStorage.alien6;
+			this.bonusInLevel = 0;
 		}
 	};
 	

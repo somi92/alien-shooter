@@ -9,22 +9,26 @@ canvas {
 	left: 10px;
 }
 
+#screen {
+	z-index: 0;
+}
+
 #alien {
-	z-index: -1;
+	z-index: -2;
 	background: transparent;
 }
 
 #shooter {
-	z-index: 0;
+	z-index: -1;
 	background: transparent;
 }
 
 #background {
-	z-index: -3;
+	z-index: -4;
 }
 
 #bonus {
-	z-index: -2;
+	z-index: -3;
 	background: transparent;
 }
 
@@ -53,23 +57,39 @@ canvas {
 	font-size: 15px;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-	-ms-user-select:none;
-	user-select:none;'
+	-ms-user-select: none;
+	user-select: none;'
 }
 
 #missile {
 	text-align: center;
-	width: 200px;
+	width: 220px;
 	height: 30px;
 	margin-top: 10px;
 	/*border: 1px blue solid;*/
 	float: right;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;'
 }
 
 #missile img {
 	height: 30px;
 	width: 30px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;'
 	/*border: 1px red solid;*/
+}
+
+#missile p {
+	float: left;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	user-select:none;
 }
 
 #screen {

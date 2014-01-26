@@ -40,11 +40,13 @@
         	<input id="again" type="button" value="Play the game!" onclick="startTheGame()" />
         </div>
          -->
-        <div id="screen">
+         
+          <div id="screen">
         	<p id="message"></p>
         	<img id="image" />
         	<input id="again" type="button" value="Play again!" onclick="init()" />
-        </div>
+          </div>
+       
         <div id="panel" unselectable='on' onselectstart='return false;' onmousedown='return false;'>
         	
         	<p class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'>ALIENS KILLED: </p>
@@ -54,10 +56,11 @@
         	<p class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'>LEVEL: </p>
         	<p id="level" class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'></p>
         	
-        	<div id="missile" unselectable='on' onselectstart='return false;' onmousedown='return false;'>Missiles: 
-        		<img id="slot3" src="images/none.png" />
-        		<img id="slot2" src="images/none.png" />
-        		<img id="slot1" src="images/none.png" />
+        	<div id="missile" unselectable='on' onselectstart='return false;' onmousedown='return false;'>
+        		<p unselectable='on' onselectstart='return false;' onmousedown='return false;'>Missiles:</p> 
+        		<img id="slot3" src="images/none.png" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
+        		<img id="slot2" src="images/none.png" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
+        		<img id="slot1" src="images/none.png" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
         	</div>
         </div>
         <script src="game/game.js"></script>
