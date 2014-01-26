@@ -85,8 +85,10 @@ function GamePlay() {
 	this.cY;
 	
 	this.slots = [];
-	
 	var missiles;
+	
+	this.timeMachineSwitch;
+	var timeMachineCounter;
 	
 	this.bonusFalling;
 	
@@ -117,8 +119,10 @@ function GamePlay() {
 		this.slots[0] = document.getElementById('slot1');
 		this.slots[1] = document.getElementById('slot2');
 		this.slots[2] = document.getElementById('slot3');
-		
 		missiles = 0;
+		
+		timeMachineSwitch = false;
+		timeMachineCounter = 0;
 		
 		alienImage = new Image();
 		alienImage = imageStorage.alien1;
@@ -158,17 +162,41 @@ function GamePlay() {
 	// this function is repeatedly executed and it draws all dynamic elements in game
 	this.animate = function() {
 		
+		var timeReverse;
+		
         this.contextAlien.strokeStyle = "transparent";
         this.contextAlien.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
         
         this.contextBonus.strokeStyle = "transparent";
         this.contextBonus.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
         
+        if(this.timeMachineSwitch==true && timeMachineCounter<=80) {
+          		// alien[i] += (speed-50);
+          		timeReverse = 2;
+          		timeMachineCounter++;
+          		// console.log("Inside true");
+          	} else {
+          		this.timeMachineSwitch = false;
+          		timeReverse = 0;
+          		timeMachineCounter = 0;
+          		// console.log("Inside false");
+            	// alien[i] += speed;	
+          	}
+        
         // in this loop a path is created for each alien
         for (i = 0; i < 7; i++) {
           	
           	var speed = Math.floor((Math.random()*level)+1);
-            alien[i]+= speed;
+          	alien[i] += (speed-timeReverse);
+          	// if(this.timeMachineSwitch==true && timeMachineCounter<=100000) {
+          		// // alien[i] += (speed-50);
+          		// alien[i] -= 100;
+          		// timeMachineCounter++;
+          	// } else {
+          		// this.timeMachineSwitch == false;
+          		// timeMachineCounter = 0;
+            	// alien[i] += speed;	
+          	// }
             
             if (alien[i] >= this.canvasAlien.height - 50) {
               	// health--;
@@ -258,13 +286,15 @@ function GamePlay() {
 	this.openTheBox = function() {
 		var p = (Math.random()*100)+1;
 		if(missiles<3) {
-			if(p>=0 && p<80) {
+			if(p>=0 && p<40) {
 				this.slots[0+missiles].setAttribute("src","images/missile.png");
 				missiles++;
 			}
-			// if(p>=40 && p<80) {
-// 				
-			// }
+			if(p>=40 && p<80) {
+				this.timeMachineSwitch=true;
+				var al = new Audio("sounds/slow_down.ogg");
+               	al.play();	
+			}
 			if(p>=80 && p<=100) {
 				var al = new Audio("sounds/aliens.ogg");
                	al.play();
