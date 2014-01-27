@@ -1,16 +1,26 @@
 /*
+ ************************** ALIEN SHOOTER **************************
+ * 
  * This is the implementation of a small game called 'Alien Shooter'.
  * 
  * The story:
- * The earth is being invaded by aliens and player's task is to destroy
+ * The Earth is being invaded by aliens and player's task is to destroy
  * them and save the humanity. :)
  * The player needs to destroy 500 alines in order to succeed and he has
  * 10 units of health. A health unit is lost when an alien falls to the
  * ground. Aliens arrive in seven waves (levels), each faster than the
- * previous one.
+ * previous one. There is also a possibility to obtain extra help by 
+ * shooting the falling mystery box. It can contain a nuclear missile which,
+ * when fired, wipes out all the aliens currently visible. There is three 
+ * missile slots available. It can also immediately trigger a small time 
+ * machine to slow down the aliens and enable the player to shoot them 
+ * more easily.
+ * 
+ * Controls: use mouse to aim, left mouse button to shoot and SPACE button
+ * to launch missiles.  
  * 
  * Development stage:
- * v1.0.0-beta
+ * v1.1.0-beta
  * 
  * Source code is under GNU GENERAL PUBLIC LICENSE, Version 2, June 1991.
  * For license details visit http://choosealicense.com/licenses/gpl-v2/.
@@ -44,8 +54,11 @@ function GamePlay() {
 	this.canvasBonus;
 	this.contextBonus;
 	
+	// holds DOM element for explosion display
 	this.explosion;
+	// controls the duration of explosion
 	var explosionCounter;
+	// keeps track if explosion is in progress 
 	this.explosionSwitch;
 	
 	// background canvas
@@ -73,32 +86,33 @@ function GamePlay() {
 	// array that holds aliens vertical position on the screen
 	var alien = [];
 	
+	// mystery box coordinates
 	var boxX;
 	var boxY;
-	
-	// this variable is used to hold the length of touches when using
-	// touchscreen devices (multiple touches at the same time), however, 
-	// this version of the game wont support touch screen devices so this
-	// variable will always be =1 because it is only possible to have one
-	// click at the same time, support for touchscreen devices will be
-	// implemented in next version
-	this.len;
 	
 	// variables to hold horizontal and vertical position of shooter on canvas
 	this.cX;
 	this.cY;
 	
+	// slots for missiles
 	this.slots = [];
-	
+	// number of missiles available (0-3)
 	var missiles;
+	// keeps track if missile is activated
 	this.missileActivated;
 	
+	// determinate if bonus (mystery box) is enabled
 	this.bonusEnabled;
+	// determinate if bonus if falling
 	this.bonusFalling;
+	// keeps track of number of bonuses already fallen in one level
 	this.bonusInLevel;
 	
+	// determinate if time machine is on/off
 	this.timeMachineSwitch;
+	// keeps track of time machine duration
 	var timeMachineCounter;
+	// controls the reverse speed of time machine, also used during explosion to hold aliens from falling
 	var timeReverse;
 	
 	// this function sets up the game environment
@@ -153,7 +167,7 @@ function GamePlay() {
 		
 		this.mouseIsDown = 0;
 		alien = [];
-		this.len = 0;
+		// this.len = 0;
 
 		finishScreen.style.visibility="hidden";
 		
@@ -181,8 +195,6 @@ function GamePlay() {
 	// this function is repeatedly executed and it draws all dynamic elements in game
 	this.animate = function() {
 		
-		// var timeReverse;
-		
         this.contextAlien.strokeStyle = "transparent";
         this.contextAlien.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
         
@@ -190,18 +202,14 @@ function GamePlay() {
         this.contextBonus.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
         
         if(this.timeMachineSwitch==true && timeMachineCounter<=80) {
-          		// alien[i] += (speed-50);
           		timeReverse = 3;
           		timeMachineCounter++;
-          		// console.log("Inside true");
           	} else {
           		this.timeMachineSwitch = false;
           		if(this.explosionSwitch==false) {
           			timeReverse = 0;	
           		}
-          		timeMachineCounter = 0;
-          		// console.log("Inside false");
-            	// alien[i] += speed;	
+          		timeMachineCounter = 0;	
           	}
         
         // in this loop a path is created for each alien
@@ -209,15 +217,6 @@ function GamePlay() {
           	
           	var speed = Math.floor((Math.random()*level)+1);
           	alien[i] += (speed-timeReverse);
-          	// if(this.timeMachineSwitch==true && timeMachineCounter<=100000) {
-          		// // alien[i] += (speed-50);
-          		// alien[i] -= 100;/
-          		// timeMachineCounter++;
-          	// } else {
-          		// this.timeMachineSwitch == false;
-          		// timeMachineCounter = 0;
-            	// alien[i] += speed;	
-          	// }
             
             if (alien[i] >= this.canvasAlien.height - 50) {
               	health--;
@@ -249,17 +248,10 @@ function GamePlay() {
         if(this.explosionSwitch == true) {
         	explosionCounter++;
         	timeReverse = 3;
-	        // if(explosionCounter>150) {
-	        	// this.explosion.style.visibility="hidden";
-	        	// // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAaa");
-	        	// explosionCounter = 0;
-	        // }
-	        // this.explosionSwitch = false;
         }
         
         if(explosionCounter>50) {
 	        	this.explosion.style.visibility="hidden";
-	        	// console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAaa");
 	        	explosionCounter = 0;
 	        	this.explosionSwitch = false;
 	        	timeReverse = 0;
@@ -306,14 +298,13 @@ function GamePlay() {
 	        	
 	        	if (this.contextBonus.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
                    	this.bonusFalling = false;
-                   	// aliensKilled++;
-                   	// this.updateGame();
                    	this.openTheBox();
                  }
             }
         	
         }
         
+        // missile activation
         if(SPACE_BUTTON==true && missiles>0 && missiles<4) {
         	this.slots[-1+missiles].setAttribute("src","images/none.png");
         	missiles--;
@@ -325,15 +316,6 @@ function GamePlay() {
         	this.missileActivated = true;
         	this.explosion.style.visibility="visible";
         	this.explosionSwitch = true;
-        	// while(explosionCounter<5000 && this.missileActivated==true) {
-				// explosionCounter++;
-			// }
-        	// var ms = 1000;
-        	// ms += new Date().getTime();
-			// while (new Date() < ms){
-// 				
-			// }
-			// this.explosion.style.visibility="hidden";
         }
         
         // check for game over  
@@ -349,6 +331,7 @@ function GamePlay() {
 		}
 	};
 	
+	// activated when user shoot the box
 	this.openTheBox = function() {
 		
 		var p = (Math.random()*100)+1;
@@ -356,23 +339,12 @@ function GamePlay() {
 			if(p>=0 && p<70) {
 				this.slots[0+missiles].setAttribute("src","images/missile.png");
 				missiles++;
-				// if(missiles==3) {
-					// this.bonusEnabled=false;
-				// }
 			}
 			if(p>=70 && p<=100) {
 				this.timeMachineSwitch=true;
 				var al = new Audio("sounds/slow_down.ogg");
                	al.play();	
 			}
-			
-			
-			// if(p>=50 && p<=100) {
-				// var al = new Audio("sounds/aliens.ogg");
-               	// al.play();
-				// health--;
-				// this.updateGame();
-			// }
 		} else {
 				this.timeMachineSwitch=true;
 				var al = new Audio("sounds/slow_down.ogg");
@@ -487,8 +459,6 @@ var imageStorage = new function() {
 	this.slot_empty.src = "images/none.png";
 	this.slot_armed.src = "images/missile.png";
 	
-	// this.shot = new Audio("sounds/shot.wav");
-	
 	function loadImage() {
 		loaded++;
 		if(loaded==14) {
@@ -589,7 +559,6 @@ function Shooter() {
         	e = event;
         game.cX = e.pageX - game.canvasShooter.offsetLeft;
         game.cY = e.pageY - game.canvasShooter.offsetTop;
-        game.len = 1;
 	};
 	
 	// fires when mouse is up
@@ -600,16 +569,18 @@ function Shooter() {
         	e = event;
         game.cX = e.pageX - game.canvasShooter.offsetLeft;
         game.cY = e.pageY - game.canvasShooter.offsetTop;
-        game.len = 1;
 	};
 }
 
+// holds the code for SPACE key
 SPACE_CODE = {
 	32: 'space',
 };
 
+// determinate if SPACE is pressed
 var SPACE_BUTTON = false;
 
+// fires when key is pressed down
 document.onkeydown = function(e) {
 	 var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
      if (SPACE_CODE[keyCode]) {
@@ -618,6 +589,7 @@ document.onkeydown = function(e) {
      }			
 };
 
+// fires when key is released and up
 document.onkeyup = function(e) {
 	 var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
      if (SPACE_CODE[keyCode]) {
