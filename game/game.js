@@ -39,7 +39,7 @@ var game = new GamePlay();
 function GamePlay() {
 	
 	// variable to hold game timer which loops the animation
-	var gameLoop;
+	this.gameLoop;
 	var shooter;
 	
 	// variables to hold canvas on which aliens are drawn
@@ -115,6 +115,8 @@ function GamePlay() {
 	// controls the reverse speed of time machine, also used during explosion to hold aliens from falling
 	var timeReverse;
 	
+	this.gamePaused;
+	
 	// this function sets up the game environment
 	this.setUpGame = function() {
 		
@@ -148,6 +150,8 @@ function GamePlay() {
 		this.slots[2] = document.getElementById('slot3');
 		missiles = 0;
 		this.missileActivated = false;
+		
+		this.gamePaused = false;
 		
 		this.bonusEnabled = true;
 		this.timeMachineSwitch = false;
@@ -268,7 +272,6 @@ function GamePlay() {
 	        		
 	        		this.bonusFalling = true;
 	        		this.bonusInLevel++;
-	        		console.log("bonusInLevel: "+this.bonusInLevel);
 	        		boxX = (Math.random()*550)+100;
 	        		boxY = -20;
 	        		this.contextBonus.beginPath();
@@ -305,14 +308,13 @@ function GamePlay() {
         }
         
         // missile activation
-        if(SPACE_BUTTON==true && missiles>0 && missiles<4) {
+        if(KEY_STATUS[KEY_CODES[32]]==true && missiles>0 && missiles<4) {
         	this.slots[-1+missiles].setAttribute("src","images/none.png");
         	missiles--;
         	var a1 = new Audio("sounds/explosion.ogg");
         	a1.play();
         	a1.play();
-        	console.log("missiles: "+missiles);
-        	SPACE_BUTTON = false;
+        	KEY_STATUS[KEY_CODES[32]] = false;
         	this.missileActivated = true;
         	this.explosion.style.visibility="visible";
         	this.explosionSwitch = true;
@@ -320,13 +322,13 @@ function GamePlay() {
         
         // check for game over  
         if(health<=0 && this.explosionSwitch==false) {
-			clearInterval(gameLoop);
+			clearInterval(this.gameLoop);
 			this.gameOver();
 		}
 		
 		// check for game finished
 		if(aliensKilled>500 && this.explosionSwitch==false) {
-			clearInterval(gameLoop);
+			clearInterval(this.gameLoop);
 			this.gameFinished();
 		}
 	};
@@ -354,7 +356,7 @@ function GamePlay() {
 	
 	// function that starts the game by firing animate function in certain interval
 	this.startTheGame = function() {
-		gameLoop = setInterval(function(){game.animate();},30);
+		this.gameLoop = setInterval(function(){game.animate();},30);
 	};
 	
 	// updates the games data regarding health, aliens killed and level transition
@@ -421,6 +423,18 @@ function GamePlay() {
 		finishImage.setAttribute("src","images/celebration.png");
 		var hero = new Audio("sounds/hero.ogg");
 		hero.play();
+	};
+	
+	this.isGamePaused = function() {
+		return this.gamePaused;
+	};
+	
+	this.resumeGame = function() {
+		this.gamePaused = false;
+	};
+	
+	this.pauseGame = function() {
+		this.gamePaused = true;
 	};
 }
 
@@ -541,12 +555,14 @@ function Shooter() {
 			var e = event;
 		}
 		
-		x = e.pageX - game.canvasShooter.offsetLeft;
-		y = e.pageY - game.canvasShooter.offsetTop;
-  		
-  		game.contextShooter.clearRect(x-400,y-400,600,600);
-		game.contextShooter.drawImage(imageStorage.scope, x-20, y-20, 40, 40);
+		if(game.isGamePaused()==false) {
 		
+			x = e.pageX - game.canvasShooter.offsetLeft;
+			y = e.pageY - game.canvasShooter.offsetTop;
+	  		
+	  		game.contextShooter.clearRect(x-400,y-400,600,600);
+			game.contextShooter.drawImage(imageStorage.scope, x-20, y-20, 40, 40);
+		}
 	};
 	
 	// fires when mouse is down
@@ -573,28 +589,45 @@ function Shooter() {
 }
 
 // holds the code for SPACE key
-SPACE_CODE = {
+KEY_CODES = {
 	32: 'space',
+	80: 'p',
 };
 
 // determinate if SPACE is pressed
-var SPACE_BUTTON = false;
+// var SPACE_BUTTON = false;
+// var PAUSE_BUTTON =
+
+// hold the status if keys are pressed
+KEY_STATUS = {};
+for (code in KEY_CODES) {
+  KEY_STATUS[ KEY_CODES[ code ]] = false;
+} 
 
 // fires when key is pressed down
 document.onkeydown = function(e) {
 	 var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
-     if (SPACE_CODE[keyCode]) {
+     if (KEY_CODES[keyCode]) {
      	e.preventDefault();
-     	SPACE_BUTTON = true;
-     }			
+     	// SPACE_BUTTON = true;
+     	KEY_STATUS[KEY_CODES[keyCode]] = true;
+     }
+     if(game.isGamePaused()==true && KEY_STATUS[KEY_CODES[80]]==true) {
+   	 	game.startTheGame();
+   	 	game.resumeGame();
+     } else if(game.isGamePaused()==false && KEY_STATUS[KEY_CODES[80]]==true) {
+     	clearTimeout(game.gameLoop);
+     	game.pauseGame();
+     }   			
 };
 
 // fires when key is released and up
 document.onkeyup = function(e) {
 	 var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
-     if (SPACE_CODE[keyCode]) {
+     if (KEY_CODES[keyCode]) {
      	e.preventDefault();
-     	SPACE_BUTTON = false;
+     	// SPACE_BUTTON = false;
+     	 KEY_STATUS[KEY_CODES[keyCode]] = false;
      }		
 };
 

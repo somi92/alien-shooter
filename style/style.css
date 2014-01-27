@@ -39,6 +39,7 @@ canvas {
 	border: 1px black solid;
 	top: 470px;
 	left: 10px;
+	background-color: white;
 }
 
 #score {
@@ -58,7 +59,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	user-select: none;
+	/*user-select: none;*/
 }
 
 #missile {
@@ -71,7 +72,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	user-select: none;
+	/*user-select: none;*/
 }
 
 #missile img {
@@ -80,7 +81,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	user-select: none;
+	/*user-select: none;*/
 	/*border: 1px red solid;*/
 }
 
@@ -89,7 +90,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select:none;
-	user-select:none;
+	/*user-select:none;*/
 }
 
 #screen {
@@ -143,7 +144,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select:none;
-	user-select:none;
+	/*user-select:none;*/
 }
 
 #menu {
@@ -173,7 +174,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select:none;
-	user-select:none;
+	/*user-select:none;*/
 }
 
 #version {
@@ -187,15 +188,15 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select:none;
-	user-select:none;
+	/*user-select:none;*/
 }
 
 #menu_items {
 	/*border: 1px white solid;*/
-	margin-top: 35px;
+	margin-top: 10px;
 	margin-left: 15px;
 	width: 350px;
-	height: 250px;
+	height: 285px;
 }
 
 .button {
@@ -205,7 +206,7 @@ canvas {
 	color: white;
 	margin-left: 5px;
 	margin-right: 5px;
-	margin-top: 10px;
+	margin-top: 8px;
 	padding: 2px 2px 2px 2px;
 	float: left;
 	background-color: black;
@@ -236,5 +237,13 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select:none;
-	user-select:none;
+	/*user-select:none;*/
+}
+
+#game_screen {
+	margin: 8% 30% 0 30%;
+}
+
+body {
+	background-image: url(../images/background.jpg);
 }

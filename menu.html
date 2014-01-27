@@ -9,14 +9,14 @@
         <title>Alien Shooter</title>
         
         <script>
-        	// document.getElementById('controls').addEventListener("click", function(event) {
-    			// (function(event) {
-        			// alert("AAAAAAAAA");
-    			// }).call(document.getElementById('controls'), event);
-			// });
 			var text = "The Earth is being invaded by aliens and player's task is to destroy them and save the humanity. The player needs to destroy 500 aliens in order to succeed and he has 10 units of health. A health unit is lost when an alien falls to the ground. Aliens arrive in seven waves (levels), each faster than the previous one. There is also a possibility to obtain extra help by shooting the falling mystery box. It can contain a nuclear missile which, when fired, wipes out all the aliens currently visible. There is three missile slots available. It can also immediately trigger a small time machine to slow down the aliens and enable the player to shoot them more easily.";
-			display = function() {
-				alert(text+"\n\n Controls: \n\n MOUSE - move your mouse to aim \n LEFT MOUSE BUTTON - shoot the gun \n SPACE - fire missile \n P - toggle pause");
+			
+			displayAbout = function() {
+				alert(text);
+			};
+			
+			displayControls = function() {
+				alert("\n\n Controls: \n\n MOUSE - move your mouse to aim \n LEFT MOUSE BUTTON - shoot the gun \n SPACE - fire missile \n P - toggle pause");
 			};
         </script>
         
@@ -37,8 +37,9 @@
     		
     		<div id="menu_items">
     			
-    			<a href="#"><div class="button">Play the game</div></a>
-    			<a href="#" id="controls" onclick="display()"><div class="button">About the game</div></a>
+    			<a href="game.html"><div class="button">Play the game</div></a>
+    			<a href="#" onclick="displayControls()"><div class="button">Controls</div></a>
+    			<a href="#" onclick="displayAbout()"><div class="button">About the game</div></a>
     			<a href="https://github.com/somi92/alien-shooter" target="_blank"><div class="button">Web & Source code</div></a>
     			
     		</div>

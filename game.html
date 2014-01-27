@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <link href="style/style.css" rel="stylesheet" type="text/css" />
+        
+        <script>
+        	
+        	setVolume = function() {
+        		var sound = document.getElementById('game_music');
+        		sound.volume = 0.8;
+        	};
+        </script>
+        
+        <title>Alien Shooter</title>
+    </head>
+    
+    <body> <!-- onload="init()" -->
+    	
+    	<!-- <h1>Hello!</h1> -->
+        <audio id="game_music" autoplay="autoplay" loop="loop" onplaying="setVolume()">
+	        	<source src="sounds/music.ogg">
+        </audio>
+        
+        <canvas id="background" width="700" height="460">
+        	Your browser does not support canvas.
+        </canvas>
+        
+        <canvas id="alien" width="700" height="460">
+        	Your browser does not support canvas.
+        </canvas>
+        
+        <canvas id="shooter" width="700" height="460">
+        	Your browser does not support canvas.
+        </canvas>
+        
+        <canvas id="bonus" width="700" height="460">
+        	Your browser does not support canvas.
+        </canvas>
+        
+        <!-- <canvas id="exp" width="700" height="460">
+        	Your browser does not support canvas.
+        </canvas> -->
+        <img id="explosion" src="images/explosion.gif" height="580" width="700" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
+        
+        <!-- <div id="start">
+        	<p id="message"></p>
+        	<img id="image" />
+        	<input id="again" type="button" value="Play the game!" onclick="startTheGame()" />
+        </div>
+         -->
+         
+          <div id="screen">
+        	<p id="message"></p>
+        	<img id="image" />
+        	<input id="again" type="button" value="Play again!" onclick="init()" />
+      		<input type="button" value="Exit to menu" onclick="window.location.href='menu.html'"/>
+          </div>
+       
+        <div id="panel" unselectable='on' onselectstart='return false;' onmousedown='return false;'>
+        	
+        	<p class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'>ALIENS KILLED: </p>
+        	<p id="score" class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'></p>
+        	<p class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'>HEALTH: </p>
+        	<p id="health" class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'></p>
+        	<p class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'>LEVEL: </p>
+        	<p id="level" class="labels" unselectable='on' onselectstart='return false;' onmousedown='return false;'></p>
+        	
+        	<div id="missile" unselectable='on' onselectstart='return false;' onmousedown='return false;'>
+        		<p unselectable='on' onselectstart='return false;' onmousedown='return false;'>Missiles:</p> 
+        		<img id="slot3" src="images/none.png" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
+        		<img id="slot2" src="images/none.png" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
+        		<img id="slot1" src="images/none.png" unselectable='on' onselectstart='return false;' onmousedown='return false;' />
+        	</div>
+        </div>
+        <script src="game/game.js"></script>
+        <!-- <script src="game/game.js"></script> -->
+        
+    </body>
+</html>
