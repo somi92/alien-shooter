@@ -44,6 +44,10 @@ function GamePlay() {
 	this.canvasBonus;
 	this.contextBonus;
 	
+	this.explosion;
+	var explosionCounter;
+	this.sranje;
+	
 	// background canvas
 	var canvasBg;
 	var contextBg;
@@ -85,7 +89,9 @@ function GamePlay() {
 	this.cY;
 	
 	this.slots = [];
+	
 	var missiles;
+	this.missileActivated;
 	
 	this.bonusEnabled;
 	this.bonusFalling;
@@ -93,6 +99,7 @@ function GamePlay() {
 	
 	this.timeMachineSwitch;
 	var timeMachineCounter;
+	var timeReverse;
 	
 	// this function sets up the game environment
 	this.setUpGame = function() {
@@ -105,6 +112,10 @@ function GamePlay() {
 		
 		this.canvasBonus = document.getElementById('bonus');
 		this.contextBonus = this.canvasBonus.getContext('2d');
+		
+		this.explosion = document.getElementById('explosion');
+		explosionCounter = 0;
+		this.sranje = false;
 		
 		canvasBg = document.getElementById('background');
 		contextBg = canvasBg.getContext('2d');
@@ -122,6 +133,7 @@ function GamePlay() {
 		this.slots[1] = document.getElementById('slot2');
 		this.slots[2] = document.getElementById('slot3');
 		missiles = 0;
+		this.missileActivated = false;
 		
 		this.bonusEnabled = true;
 		this.timeMachineSwitch = false;
@@ -160,13 +172,16 @@ function GamePlay() {
 		// initialize the aliens vertical position to 0
 		for (i = 0; i < 7; i++) {
                 alien[i] = 0;
+                if(i<3) {
+                	this.slots[i].setAttribute("src","images/none.png");
+                }
             }
 	};
 	
 	// this function is repeatedly executed and it draws all dynamic elements in game
 	this.animate = function() {
 		
-		var timeReverse;
+		// var timeReverse;
 		
         this.contextAlien.strokeStyle = "transparent";
         this.contextAlien.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
@@ -181,7 +196,9 @@ function GamePlay() {
           		// console.log("Inside true");
           	} else {
           		this.timeMachineSwitch = false;
-          		timeReverse = 0;
+          		if(this.sranje==false) {
+          			timeReverse = 0;	
+          		}
           		timeMachineCounter = 0;
           		// console.log("Inside false");
             	// alien[i] += speed;	
@@ -194,7 +211,7 @@ function GamePlay() {
           	alien[i] += (speed-timeReverse);
           	// if(this.timeMachineSwitch==true && timeMachineCounter<=100000) {
           		// // alien[i] += (speed-50);
-          		// alien[i] -= 100;
+          		// alien[i] -= 100;/
           		// timeMachineCounter++;
           	// } else {
           		// this.timeMachineSwitch == false;
@@ -203,9 +220,9 @@ function GamePlay() {
           	// }
             
             if (alien[i] >= this.canvasAlien.height - 50) {
-              	// health--;
+              	health--;
                	var al = new Audio("sounds/aliens.ogg");
-               	al.play();
+               	// al.play();
                	var pos = Math.floor((Math.random()*100)+1);
                 alien[i] = -pos;
                 this.updateGame();
@@ -219,39 +236,61 @@ function GamePlay() {
             this.contextAlien.drawImage(alienImage,x,y,70,70);
             this.contextAlien.closePath();
             var pos1 = Math.floor(10+(1+120-10)*Math.random());
-        
-            // this loop checks if click has occured on any alien and sends it back to the top, see len
-            for (j = 0;j < this.len; j++) {
-   		         if (this.contextAlien.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
-                   	alien[i] = -pos1;
-                   	aliensKilled++;
-                   	this.updateGame();	
-                 }
+
+   		     if ((this.contextAlien.isPointInPath(this.cX, this.cY) && this.mouseIsDown) || this.missileActivated == true) {
+   		     	alien[i] = -pos1;
+               	aliensKilled++;
+              	this.updateGame();	
              }
              
              this.contextAlien.stroke();
         }
         
-        if(this.bonusFalling==false && this.bonusEnabled==true && this.bonusInLevel<3 ) {
+        if(this.sranje == true) {
+        	explosionCounter++;
+        	timeReverse = 3;
+	        // if(explosionCounter>150) {
+	        	// this.explosion.style.visibility="hidden";
+	        	// // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAaa");
+	        	// explosionCounter = 0;
+	        // }
+	        // this.sranje = false;
+        }
+        
+        if(explosionCounter>50) {
+	        	this.explosion.style.visibility="hidden";
+	        	// console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAaa");
+	        	explosionCounter = 0;
+	        	this.sranje = false;
+	        	timeReverse = 0;
+	        }
+        
+        this.missileActivated = false;
+        
+        if(this.bonusFalling==false) {
         	
-        	var mysteryP = Math.floor((Math.random()*1000)+1);
-        	if(mysteryP>=998 && mysteryP<=1000 && level>1) {
-        		
-        		bonusFalling = true;
-        		this.bonusInLevel++;
-        		boxX = (Math.random()*650)+50;
-        		boxY = -20;
-        		this.contextBonus.beginPath();
-        		this.contextBonus.arc(boxX+35, boxY+35, 33, 0, 2 * Math.PI);
-        		this.contextBonus.drawImage(imageStorage.mystery_box,boxX,boxY,70,70);
-        		this.contextBonus.closePath();
+        	if(this.bonusInLevel<2) {
+        	
+        		var mysteryP = Math.floor((Math.random()*1000)+1);
+	        	if(mysteryP>=998 && mysteryP<=1000 && level>1) {
+	        		
+	        		this.bonusFalling = true;
+	        		this.bonusInLevel++;
+	        		console.log("bonusInLevel: "+this.bonusInLevel);
+	        		boxX = (Math.random()*550)+100;
+	        		boxY = -20;
+	        		this.contextBonus.beginPath();
+	        		this.contextBonus.arc(boxX+35, boxY+35, 33, 0, 2 * Math.PI);
+	        		this.contextBonus.drawImage(imageStorage.mystery_box,boxX,boxY,70,70);
+	        		this.contextBonus.closePath();
+	        	}	
         	}	
         	
         } else {
         	
         	if (boxY >= this.canvasAlien.height - 50) {
                	
-               	bonusFalling = false;
+               	this.bonusFalling = false;
                	
             } else {
             	
@@ -266,7 +305,7 @@ function GamePlay() {
 	        	}
 	        	
 	        	if (this.contextBonus.isPointInPath(this.cX, this.cY) && this.mouseIsDown) {
-                   	bonusFalling = false;
+                   	this.bonusFalling = false;
                    	// aliensKilled++;
                    	// this.updateGame();
                    	this.openTheBox();
@@ -275,11 +314,33 @@ function GamePlay() {
         	
         }
         
+        if(SPACE_BUTTON==true && missiles>0 && missiles<4) {
+        	this.slots[-1+missiles].setAttribute("src","images/none.png");
+        	missiles--;
+        	var a1 = new Audio("sounds/explosion.ogg");
+        	a1.play();
+        	a1.play();
+        	console.log("missiles: "+missiles);
+        	SPACE_BUTTON = false;
+        	this.missileActivated = true;
+        	this.explosion.style.visibility="visible";
+        	this.sranje = true;
+        	// while(explosionCounter<5000 && this.missileActivated==true) {
+				// explosionCounter++;
+			// }
+        	// var ms = 1000;
+        	// ms += new Date().getTime();
+			// while (new Date() < ms){
+// 				
+			// }
+			// this.explosion.style.visibility="hidden";
+        }
+        
         // check for game over  
-        if(health<=0) {
-			clearInterval(gameLoop);
-			this.gameOver();
-		}
+        // if(health<=0) {
+			// clearInterval(gameLoop);
+			// this.gameOver();
+		// }
 		
 		// check for game finished
 		if(aliensKilled>500) {
@@ -292,18 +353,20 @@ function GamePlay() {
 		
 		var p = (Math.random()*100)+1;
 		if(missiles<3) {
-			if(p>=0 && p<50) {
+			if(p>=0 && p<100) {
 				this.slots[0+missiles].setAttribute("src","images/missile.png");
 				missiles++;
 				// if(missiles==3) {
 					// this.bonusEnabled=false;
 				// }
 			}
-			if(p>=50 && p<=100) {
-				this.timeMachineSwitch=true;
-				var al = new Audio("sounds/slow_down.ogg");
-               	al.play();	
-			}
+			// if(p>=50 && p<=100) {
+				// this.timeMachineSwitch=true;
+				// var al = new Audio("sounds/slow_down.ogg");
+               	// al.play();	
+			// }
+			
+			
 			// if(p>=50 && p<=100) {
 				// var al = new Audio("sounds/aliens.ogg");
                	// al.play();
@@ -333,37 +396,37 @@ function GamePlay() {
 		var score = document.getElementById('level');
 		score.innerHTML=level-1;
 		
-		if(aliensKilled>50) {
+		if(aliensKilled>50 && aliensKilled<52) {
 			level = 3;
 			alienImage = imageStorage.ufo;
 			this.bonusInLevel = 0;
 		}
 		
-		if(aliensKilled>100) {
+		if(aliensKilled>100 && aliensKilled<102) {
 			level = 4;
 			alienImage = imageStorage.alien2;
 			this.bonusInLevel = 0;
 		}
 		
-		if(aliensKilled>170) {
+		if(aliensKilled>170 && aliensKilled<172) {
 			level = 5;
 			alienImage = imageStorage.alien3;
 			this.bonusInLevel = 0;
 		}
 		
-		if(aliensKilled>270) {
+		if(aliensKilled>270 && aliensKilled<272) {
 			level = 6;
 			alienImage = imageStorage.alien4;
 			this.bonusInLevel = 0;
 		}
 		
-		if(aliensKilled>380) {
+		if(aliensKilled>380 && aliensKilled<382) {
 			level = 7;
 			alienImage = imageStorage.alien5;
 			this.bonusInLevel = 0;
 		}
 		
-		if(aliensKilled>450) {
+		if(aliensKilled>450 && aliensKilled<452) {
 			level = 8;
 			alienImage = imageStorage.alien6;
 			this.bonusInLevel = 0;
@@ -394,7 +457,6 @@ var imageStorage = new function() {
 	
 	var loaded = 0;
 	
-	
 	this.bg = new Image();
 	this.scope = new Image();
 	this.alien1 = new Image();
@@ -407,6 +469,8 @@ var imageStorage = new function() {
 	this.evilalien = new Image();
 	this.celebration = new Image();
 	this.mystery_box = new Image();
+	this.slot_empty = new Image();
+	this.slot_armed = new Image();
 	
 	this.bg.src = "images/bg.png";
 	this.scope.src = "images/scope.png";
@@ -420,12 +484,14 @@ var imageStorage = new function() {
 	this.evilalien.src = "images/evilalien.png";
 	this.celebration.src = "images/celebration.png";
 	this.mystery_box.src = "images/mystery_box.png";
+	this.slot_empty.src = "images/none.png";
+	this.slot_armed.src = "images/missile.png";
 	
 	// this.shot = new Audio("sounds/shot.wav");
 	
 	function loadImage() {
 		loaded++;
-		if(loaded==12) {
+		if(loaded==14) {
 			window.init();
 		}
 	}
@@ -475,6 +541,14 @@ var imageStorage = new function() {
 	};
 	
 	this.mystery_box.onload = function() {
+		loadImage();
+	};
+	
+	this.slot_empty.onload = function() {
+		loadImage();
+	};
+	
+	this.slot_armed.onload = function() {
 		loadImage();
 	};
 };
@@ -529,6 +603,28 @@ function Shooter() {
         game.len = 1;
 	};
 }
+
+SPACE_CODE = {
+	32: 'space',
+};
+
+var SPACE_BUTTON = false;
+
+document.onkeydown = function(e) {
+	 var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
+     if (SPACE_CODE[keyCode]) {
+     	e.preventDefault();
+     	SPACE_BUTTON = true;
+     }			
+};
+
+document.onkeyup = function(e) {
+	 var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
+     if (SPACE_CODE[keyCode]) {
+     	e.preventDefault();
+     	SPACE_BUTTON = false;
+     }		
+};
 
 // main function to initialize the whole game
 function init() {
