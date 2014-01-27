@@ -46,7 +46,7 @@ function GamePlay() {
 	
 	this.explosion;
 	var explosionCounter;
-	this.sranje;
+	this.explosionSwitch;
 	
 	// background canvas
 	var canvasBg;
@@ -115,7 +115,7 @@ function GamePlay() {
 		
 		this.explosion = document.getElementById('explosion');
 		explosionCounter = 0;
-		this.sranje = false;
+		this.explosionSwitch = false;
 		
 		canvasBg = document.getElementById('background');
 		contextBg = canvasBg.getContext('2d');
@@ -189,14 +189,14 @@ function GamePlay() {
         this.contextBonus.strokeStyle = "transparent";
         this.contextBonus.clearRect(0,0, this.canvasAlien.width, this.canvasAlien.height);
         
-        if(this.timeMachineSwitch==true && timeMachineCounter<=70) {
+        if(this.timeMachineSwitch==true && timeMachineCounter<=80) {
           		// alien[i] += (speed-50);
           		timeReverse = 3;
           		timeMachineCounter++;
           		// console.log("Inside true");
           	} else {
           		this.timeMachineSwitch = false;
-          		if(this.sranje==false) {
+          		if(this.explosionSwitch==false) {
           			timeReverse = 0;	
           		}
           		timeMachineCounter = 0;
@@ -222,7 +222,7 @@ function GamePlay() {
             if (alien[i] >= this.canvasAlien.height - 50) {
               	health--;
                	var al = new Audio("sounds/aliens.ogg");
-               	// al.play();
+               	al.play();
                	var pos = Math.floor((Math.random()*100)+1);
                 alien[i] = -pos;
                 this.updateGame();
@@ -246,7 +246,7 @@ function GamePlay() {
              this.contextAlien.stroke();
         }
         
-        if(this.sranje == true) {
+        if(this.explosionSwitch == true) {
         	explosionCounter++;
         	timeReverse = 3;
 	        // if(explosionCounter>150) {
@@ -254,14 +254,14 @@ function GamePlay() {
 	        	// // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAaa");
 	        	// explosionCounter = 0;
 	        // }
-	        // this.sranje = false;
+	        // this.explosionSwitch = false;
         }
         
         if(explosionCounter>50) {
 	        	this.explosion.style.visibility="hidden";
 	        	// console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAaa");
 	        	explosionCounter = 0;
-	        	this.sranje = false;
+	        	this.explosionSwitch = false;
 	        	timeReverse = 0;
 	        }
         
@@ -269,7 +269,7 @@ function GamePlay() {
         
         if(this.bonusFalling==false) {
         	
-        	if(this.bonusInLevel<2) {
+        	if(this.bonusInLevel<2 && level>2) {
         	
         		var mysteryP = Math.floor((Math.random()*1000)+1);
 	        	if(mysteryP>=998 && mysteryP<=1000 && level>1) {
@@ -324,7 +324,7 @@ function GamePlay() {
         	SPACE_BUTTON = false;
         	this.missileActivated = true;
         	this.explosion.style.visibility="visible";
-        	this.sranje = true;
+        	this.explosionSwitch = true;
         	// while(explosionCounter<5000 && this.missileActivated==true) {
 				// explosionCounter++;
 			// }
@@ -337,13 +337,13 @@ function GamePlay() {
         }
         
         // check for game over  
-        // if(health<=0) {
-			// clearInterval(gameLoop);
-			// this.gameOver();
-		// }
+        if(health<=0 && this.explosionSwitch==false) {
+			clearInterval(gameLoop);
+			this.gameOver();
+		}
 		
 		// check for game finished
-		if(aliensKilled>500) {
+		if(aliensKilled>500 && this.explosionSwitch==false) {
 			clearInterval(gameLoop);
 			this.gameFinished();
 		}
@@ -353,18 +353,18 @@ function GamePlay() {
 		
 		var p = (Math.random()*100)+1;
 		if(missiles<3) {
-			if(p>=0 && p<100) {
+			if(p>=0 && p<70) {
 				this.slots[0+missiles].setAttribute("src","images/missile.png");
 				missiles++;
 				// if(missiles==3) {
 					// this.bonusEnabled=false;
 				// }
 			}
-			// if(p>=50 && p<=100) {
-				// this.timeMachineSwitch=true;
-				// var al = new Audio("sounds/slow_down.ogg");
-               	// al.play();	
-			// }
+			if(p>=70 && p<=100) {
+				this.timeMachineSwitch=true;
+				var al = new Audio("sounds/slow_down.ogg");
+               	al.play();	
+			}
 			
 			
 			// if(p>=50 && p<=100) {

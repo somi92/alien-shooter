@@ -58,7 +58,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	user-select: none;'
+	user-select: none;
 }
 
 #missile {
@@ -71,7 +71,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	user-select: none;'
+	user-select: none;
 }
 
 #missile img {
@@ -80,7 +80,7 @@ canvas {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
-	user-select: none;'
+	user-select: none;
 	/*border: 1px red solid;*/
 }
 
@@ -140,4 +140,8 @@ canvas {
 	left: 0px;
 	z-index: 1;
 	visibility: hidden;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	user-select:none;
 }
