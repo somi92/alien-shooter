@@ -6,7 +6,7 @@
  * The story:
  * The Earth is being invaded by aliens and player's task is to destroy
  * them and save the humanity. :)
- * The player needs to destroy 500 alines in order to succeed and he has
+ * The player needs to destroy 500 aliens in order to succeed and he has
  * 10 units of health. A health unit is lost when an alien falls to the
  * ground. Aliens arrive in seven waves (levels), each faster than the
  * previous one. There is also a possibility to obtain extra help by 
@@ -20,7 +20,7 @@
  * to launch missiles.  
  * 
  * Development stage:
- * v1.1.0-beta
+ * v1.0.0-beta
  * 
  * Source code is under GNU GENERAL PUBLIC LICENSE, Version 2, June 1991.
  * For license details visit http://choosealicense.com/licenses/gpl-v2/.
