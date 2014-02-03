@@ -208,13 +208,13 @@ function GamePlay() {
         if(this.timeMachineSwitch==true && timeMachineCounter<=80) {
           		timeReverse = 3;
           		timeMachineCounter++;
-          	} else {
-          		this.timeMachineSwitch = false;
-          		if(this.explosionSwitch==false) {
-          			timeReverse = 0;	
-          		}
-          		timeMachineCounter = 0;	
-          	}
+        } else {
+      		this.timeMachineSwitch = false;
+          	if(this.explosionSwitch==false) {
+          		timeReverse = 0;	
+      		}
+          	timeMachineCounter = 0;	
+        }
         
         // in this loop a path is created for each alien
         for (i = 0; i < 7; i++) {
@@ -289,7 +289,7 @@ function GamePlay() {
                	
             } else {
             	
-            	boxY += 5;
+            	boxY += 8;
 	        	this.contextBonus.beginPath();
 	        	this.contextBonus.arc(boxX+35, boxY+35, 33, 0, 2 * Math.PI);
 	        	this.contextBonus.drawImage(imageStorage.mystery_box,boxX,boxY,70,70);
@@ -616,7 +616,7 @@ document.onkeydown = function(e) {
    	 	game.startTheGame();
    	 	game.resumeGame();
      } else if(game.isGamePaused()==false && KEY_STATUS[KEY_CODES[80]]==true) {
-     	clearTimeout(game.gameLoop);
+     	clearInterval(game.gameLoop);
      	game.pauseGame();
      }   			
 };
